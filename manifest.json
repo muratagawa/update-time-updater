@@ -3,7 +3,7 @@
 	"name": "Update Time Updater",
 	"version": "0.0.1",
 	"minAppVersion": "0.15.0",
-	"description": "Obsidian plugin to update the 'update time' element when saving or manually.",
+	"description": "Update the 'update time' element when saving or manually.",
 	"author": "MURATAGAWA Kei",
 	"authorUrl": "https://github.com/muratagawa",
 	"fundingUrl": "",
