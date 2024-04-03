@@ -60,7 +60,7 @@ export default class UpdateTimeUpdaterPlugin extends Plugin {
 		const ribbonIconEl = this.addRibbonIcon('timer', 'Update modified date', (evt: MouseEvent) => {
 			// Called when the user clicks the icon.
 			const now = moment();
-			let f = this.app.workspace.getActiveFile();
+			const f = this.app.workspace.getActiveFile();
 			if (f) {
 				let frontmatter = this.app.metadataCache.getFileCache(f)?.frontmatter;
 				if (frontmatter) {
@@ -69,7 +69,7 @@ export default class UpdateTimeUpdaterPlugin extends Plugin {
 					});
 				}
 			}
-			new Notice(now.format(this.settings.datetimeFormat).toString());
+			new Notice(`Value of '${this.settings.updateKey}' has been updated.`);
 		});
 		// Perform additional things with the ribbon
 		ribbonIconEl.addClass('my-plugin-ribbon-class');
