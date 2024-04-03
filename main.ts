@@ -61,8 +61,6 @@ export default class UpdateTimeUpdaterPlugin extends Plugin {
 			// Called when the user clicks the icon.
 			this.updateFrontmatter();
 		});
-		// Perform additional things with the ribbon
-		ribbonIconEl.addClass('my-plugin-ribbon-class');
 
 		// This adds a simple command that can be triggered anywhere
 		this.addCommand({
