@@ -65,7 +65,7 @@ export default class UpdateTimeUpdaterPlugin extends Plugin {
 		// This adds a simple command that can be triggered anywhere
 		this.addCommand({
 			id: 'update-modified-datetime-manually',
-			name: 'Update manually',
+			name: 'Update modified datetime manually',
 			callback: () => {
 				this.updateFrontmatter();
 			}
