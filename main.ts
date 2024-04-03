@@ -23,8 +23,6 @@ class UpdateTimeUpdaterSettingTab extends PluginSettingTab {
 
 		containerEl.empty();
 
-		containerEl.createEl('h2', { text: 'Update Time Updater Settings' });
-
 		new Setting(containerEl)
 			.setName('Target key')
 			.setDesc('Frontmatter key for modification date')
