@@ -1,4 +1,4 @@
-import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting, TFile, moment } from 'obsidian';
+import { App, Notice, Plugin, PluginSettingTab, Setting, moment } from 'obsidian';
 
 interface UpdateTimeUpdaterSettings {
 	updateKey: string;
@@ -56,9 +56,8 @@ export default class UpdateTimeUpdaterPlugin extends Plugin {
 	async onload() {
 		await this.loadSettings();
 
-		// This creates an icon in the left ribbon.
-		const ribbonIconEl = this.addRibbonIcon('timer', 'Update modified date', (evt: MouseEvent) => {
-			// Called when the user clicks the icon.
+		// Called when the user clicks the icon.
+		this.addRibbonIcon('timer', 'Update modified date', (evt: MouseEvent) => {
 			this.updateFrontmatter();
 		});
 
@@ -73,9 +72,6 @@ export default class UpdateTimeUpdaterPlugin extends Plugin {
 
 		// This adds a settings tab so the user can configure various aspects of the plugin
 		this.addSettingTab(new UpdateTimeUpdaterSettingTab(this.app, this));
-
-		// When registering intervals, this function will automatically clear the interval when the plugin is disabled.
-		this.registerInterval(window.setInterval(() => console.log('setInterval'), 5 * 60 * 1000));
 	}
 
 	onunload() {
@@ -94,8 +90,8 @@ export default class UpdateTimeUpdaterPlugin extends Plugin {
 		const now = moment();
 		const f = this.app.workspace.getActiveFile();
 		if (f) {
-			let frontmatter = this.app.metadataCache.getFileCache(f)?.frontmatter;
-			if (frontmatter) {
+			const fm = this.app.metadataCache.getFileCache(f)?.frontmatter;
+			if (fm) {
 				this.app.fileManager.processFrontMatter(f, frontmatter => {
 					frontmatter[this.settings.updateKey] = now.format(this.settings.datetimeFormat);
 				});
