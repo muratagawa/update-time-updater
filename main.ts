@@ -1,13 +1,13 @@
-import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
+import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting, TFile, moment } from 'obsidian';
 
 interface UpdateTimeUpdaterSettings {
-	frontmatter_key: string;
-	datetime_format: string;
+	updateKey: string;
+	datetimeFormat: string;
 }
 
 const DEFAULT_SETTINGS: UpdateTimeUpdaterSettings = {
-	frontmatter_key: 'updated',
-	datetime_format: 'YYYY-MM-DD HH:mm:ss'
+	updateKey: 'updated',
+	datetimeFormat: 'YYYY-MM-DD HH:mm:ss'
 }
 
 class UpdateTimeUpdaterSettingTab extends PluginSettingTab {
@@ -30,9 +30,9 @@ class UpdateTimeUpdaterSettingTab extends PluginSettingTab {
 			.setDesc('Frontmatter key for modification date')
 			.addText(text => text
 				.setPlaceholder('updated')
-				.setValue(this.plugin.settings.frontmatter_key)
+				.setValue(this.plugin.settings.updateKey)
 				.onChange(async (value) => {
-					this.plugin.settings.frontmatter_key = value;
+					this.plugin.settings.updateKey = value;
 					await this.plugin.saveSettings();
 				}));
 
@@ -41,9 +41,9 @@ class UpdateTimeUpdaterSettingTab extends PluginSettingTab {
 			.setDesc('Moments.js date format to use')
 			.addText(text => text
 				.setPlaceholder('YYYY-MM-DD HH:mm:ss')
-				.setValue(this.plugin.settings.datetime_format)
+				.setValue(this.plugin.settings.datetimeFormat)
 				.onChange(async (value) => {
-					this.plugin.settings.datetime_format = value;
+					this.plugin.settings.datetimeFormat = value;
 					await this.plugin.saveSettings();
 				}));
 	}
@@ -57,19 +57,31 @@ export default class UpdateTimeUpdaterPlugin extends Plugin {
 		await this.loadSettings();
 
 		// This creates an icon in the left ribbon.
-		const ribbonIconEl = this.addRibbonIcon('dice', 'Sample Plugin', (evt: MouseEvent) => {
+		const ribbonIconEl = this.addRibbonIcon('timer', 'Update modified date', (evt: MouseEvent) => {
 			// Called when the user clicks the icon.
-			new Notice('You clicked!');
+			const now = moment();
+			let f = this.app.workspace.getActiveFile();
+			if (f) {
+				let frontmatter = this.app.metadataCache.getFileCache(f)?.frontmatter;
+				if (frontmatter) {
+					this.app.fileManager.processFrontMatter(f, frontmatter => {
+						frontmatter[this.settings.updateKey] = now.format(this.settings.datetimeFormat);
+					});
+				}
+			}
+			new Notice(now.format(this.settings.datetimeFormat).toString());
 		});
 		// Perform additional things with the ribbon
 		ribbonIconEl.addClass('my-plugin-ribbon-class');
 
 		// This adds a simple command that can be triggered anywhere
 		this.addCommand({
-			id: 'open-sample-modal-simple',
-			name: 'Open sample modal (simple)',
+			id: 'update-modified-datetime-manually',
+			name: 'Update manually',
 			callback: () => {
-				new UpdateTimeUpdaterModal(this.app).open();
+				const now = moment();
+				new Notice(now.toString());
+				// new UpdateTimeUpdaterModal(this.app).open();
 			}
 		});
 		// This adds an editor command that can perform some operation on the current editor instance
@@ -106,9 +118,9 @@ export default class UpdateTimeUpdaterPlugin extends Plugin {
 
 		// If the plugin hooks up any global DOM events (on parts of the app that doesn't belong to this plugin)
 		// Using this function will automatically remove the event listener when this plugin is disabled.
-		this.registerDomEvent(document, 'click', (evt: MouseEvent) => {
-			console.log('click', evt);
-		});
+		// this.registerDomEvent(document, 'click', (evt: MouseEvent) => {
+		// 	console.log('click', evt);
+		// });
 
 		// When registering intervals, this function will automatically clear the interval when the plugin is disabled.
 		this.registerInterval(window.setInterval(() => console.log('setInterval'), 5 * 60 * 1000));
@@ -125,7 +137,13 @@ export default class UpdateTimeUpdaterPlugin extends Plugin {
 	async saveSettings() {
 		await this.saveData(this.settings);
 	}
+
+	async updateFrontmatter (file: TFile) {
+		//TODO
+	}
+	
 }
+
 
 class UpdateTimeUpdaterModal extends Modal {
 	constructor(app: App) {
