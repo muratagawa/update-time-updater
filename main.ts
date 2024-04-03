@@ -105,20 +105,3 @@ export default class UpdateTimeUpdaterPlugin extends Plugin {
 	}
 
 }
-
-
-class UpdateTimeUpdaterModal extends Modal {
-	constructor(app: App) {
-		super(app);
-	}
-
-	onOpen() {
-		const { contentEl } = this;
-		contentEl.setText('mojamoja!');
-	}
-
-	onClose() {
-		const { contentEl } = this;
-		contentEl.empty();
-	}
-}
