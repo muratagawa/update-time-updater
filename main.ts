@@ -87,15 +87,27 @@ export default class UpdateTimeUpdaterPlugin extends Plugin {
 	async updateFrontmatter() {
 		const now = moment();
 		const f = this.app.workspace.getActiveFile();
-		if (f) {
-			const fm = this.app.metadataCache.getFileCache(f)?.frontmatter;
-			if (fm) {
-				this.app.fileManager.processFrontMatter(f, frontmatter => {
-					frontmatter[this.settings.updateKey] = now.format(this.settings.datetimeFormat);
-				});
-			}
+		if (f == null){
+			new Notice(`Could not get active file.`);
+			return;	
 		}
-		new Notice(`Value of '${this.settings.updateKey}' has been updated.`);
-	}
+		
+		// parse frontmatter
+		const fm = this.app.metadataCache.getFileCache(f)?.frontmatter;
+		if (fm == undefined) {
+			new Notice(`No frontmatter found.`);
+			return;
+		}
 
+		// update target key
+		this.app.fileManager.processFrontMatter(f, frontmatter => {
+			if (frontmatter[this.settings.updateKey] == undefined) {
+				new Notice(`Could not find target key '${this.settings.updateKey}'.`);
+				return;
+			}
+
+			frontmatter[this.settings.updateKey] = now.format(this.settings.datetimeFormat);
+			new Notice(`Value of '${this.settings.updateKey}' has been updated.`);
+		});
+	}
 }
